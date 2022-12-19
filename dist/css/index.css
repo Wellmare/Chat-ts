@@ -1,0 +1,15 @@
+.card-text {
+    font-size: 1.3rem;
+}
+
+.modal-dark-bg {
+    background: rgb(59, 59, 59);
+}
+
+.modal-header {
+    border-bottom: 1px solid rgba(253, 252, 252, 0.534);
+}
+
+.modal-footer {
+    border-top: 1px solid rgba(253, 252, 252, 0.534);
+}
