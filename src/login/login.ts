@@ -5,16 +5,19 @@ import { getDataFromLocalStorage, setDataToLocalStorage } from '../utils';
 import { validateLogin, setInvalidFeedback } from './validate';
 
 // NODES --
-const usernameInput = document.querySelector<HTMLInputElement>(
-	Selectors.USERNAME_INPUT
-)!;
-const passwordInput = document.querySelector<HTMLInputElement>(
-	Selectors.PASSWORD_INPUT
-)!;
 const usernameTextNode = document.querySelector<HTMLParagraphElement>(
 	Selectors.USERNAME_TEXT
 )!;
 const loginModalButton = document.querySelector<HTMLButtonElement>('#login')!;
+const nodesInModal = {
+	usernameInput: document.querySelector<HTMLInputElement>(
+		Selectors.USERNAME_INPUT
+	)!,
+	passwordInput: document.querySelector<HTMLInputElement>(
+		Selectors.PASSWORD_INPUT
+	)!,
+	loginButton: document.querySelector(Selectors.LOGIN_BUTTON)
+};
 // -- NODES
 
 // BOOTSTRAP MODAL --
@@ -30,26 +33,25 @@ export let isLogin: boolean;
 
 // init on page entry
 export const initLogin = (): void => {
-	const isLoginFromLS = getDataFromLocalStorage<boolean>('isLogin');
-	if (isLoginFromLS != null) {
-		isLogin = isLoginFromLS;
+	const isLoginFromLocalStorage = getDataFromLocalStorage<boolean>('isLogin');
+	if (isLoginFromLocalStorage != null) {
+		isLogin = isLoginFromLocalStorage;
 
-		const usernameFromLS = getDataFromLocalStorage<string | null>(
+		const usernameFromLocalStorage = getDataFromLocalStorage<string | null>(
 			'username'
 		);
-		if (usernameFromLS) {
-			username = usernameFromLS;
+		if (usernameFromLocalStorage) {
+			username = usernameFromLocalStorage;
 		}
-	}
-
-	if (isLogin) {
 		loginModalButton.textContent = 'Exit';
 	} else {
+		isLogin = false;
 		username = 'guest';
 	}
 
 	usernameTextNode.textContent = username;
 
+	// EVENTS LISTENERS --
 	loginModalButton.addEventListener('click', () => {
 		if (isLogin) {
 			onExit();
@@ -58,34 +60,29 @@ export const initLogin = (): void => {
 		}
 	});
 
-	document
-		.querySelector(Selectors.LOGIN_BUTTON)
-		?.addEventListener(`click`, () => {
-			if (isLogin) {
-				onExit();
-			} else {
-				onLogin();
-			}
-		});
+	nodesInModal.loginButton?.addEventListener(`click`, () =>
+		isLogin ? onExit() : onLogin()
+	);
+	// -- EVENTS LISTENERS
 };
 
 // EVENTS --
 export const onLogin = () => {
 	const validateResponse = validateLogin(
-		usernameInput.value,
-		passwordInput.value
+		nodesInModal.usernameInput.value,
+		nodesInModal.passwordInput.value
 	);
 	setInvalidFeedback(validateResponse);
 	if (validateResponse.isValid) {
 		isLogin = true;
-		username = usernameInput.value;
+		username = nodesInModal.usernameInput.value;
 		setDataToLocalStorage<boolean>('isLogin', isLogin);
 		setDataToLocalStorage<string>('username', username);
 		usernameTextNode.textContent = username;
 		loginModal.hide();
 
-		usernameInput.value = ``;
-		passwordInput.value = ``;
+		nodesInModal.usernameInput.value = ``;
+		nodesInModal.passwordInput.value = ``;
 		loginModalButton.textContent = 'Exit';
 	}
 };

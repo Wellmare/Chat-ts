@@ -3,33 +3,37 @@ import { v4 as uuid } from 'uuid';
 import { getDataFromLocalStorage, setDataToLocalStorage } from './utils';
 const messagesContainer = document.querySelector<HTMLDivElement>(
 	Selectors.MESSAGES_CONTAINER
-);
+)!;
 
 const messages: IMessage[] = [];
 
 export const sendMessage = (login: string, message: string, id?: string) => {
-	const lastMessage = document.querySelector<HTMLDivElement>('.message');
+	if (message.length === 0) return;
 
-	const messageObj: IMessage = {
+	const lastMessage = document.querySelector<HTMLDivElement>(
+		Selectors.LAST_MESSAGE
+	);
+
+	const formedMessage: IMessage = {
 		login,
 		message,
 		id: id || uuid()
 	};
 
 	const messageHTML = `
-        <div class="card text-start mb-3 message" data-id="${messageObj.id}">
+        <div class="card text-start mb-3 message" data-id="${formedMessage.id}">
             <div class="card-body">
-                <h4 class="card-title">${messageObj.login}</h4>
-                <p class="card-text">${messageObj.message}</p>
+                <h4 class="card-title">${formedMessage.login}</h4>
+                <p class="card-text">${formedMessage.message}</p>
             </div>
         </div>
     `;
 	if (lastMessage) {
 		lastMessage?.insertAdjacentHTML('beforebegin', messageHTML);
 	} else {
-		messagesContainer!.innerHTML = messageHTML;
+		messagesContainer.innerHTML = messageHTML;
 	}
-	messages.push(messageObj);
+	messages.push(formedMessage);
 	setDataToLocalStorage<IMessage[]>('messages', messages);
 };
 

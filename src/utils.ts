@@ -1,8 +1,25 @@
-export const setDataToLocalStorage = <T>(key: string, value: T) => {
-    const valueToJSON = JSON.stringify(value)
-    localStorage.setItem(key, valueToJSON)
-}
+import { ErrorsMessages } from './types';
 
-export const getDataFromLocalStorage = <T>(key: string) => {
-    return JSON.parse(localStorage.getItem(key)!) as T
-}
+export const setDataToLocalStorage = <T>(key: string, value: T): void => {
+	const valueToJSON = JSON.stringify(value);
+	localStorage.setItem(key, valueToJSON);
+};
+
+export const getDataFromLocalStorage = <T>(key: string): T | null => {
+	const localStorageResponse = localStorage.getItem(key);
+	if (
+		localStorageResponse !== null &&
+		JSON.parse(localStorageResponse) !== null
+	) {
+		return JSON.parse(localStorageResponse);
+	}
+	return null;
+};
+
+export const getError = (
+	errorMessage: ErrorsMessages | null,
+	isValid: boolean = false
+) => ({
+	isValid,
+	errorMessage
+});
